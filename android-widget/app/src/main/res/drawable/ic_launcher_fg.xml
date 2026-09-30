@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cuadrícula 3x3 de cuadraditos en la zona segura del icono adaptativo -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#0E4429" android:pathData="M33,33h12v12h-12z" />
+    <path android:fillColor="#26A641" android:pathData="M48,33h12v12h-12z" />
+    <path android:fillColor="#39D353" android:pathData="M63,33h12v12h-12z" />
+    <path android:fillColor="#006D32" android:pathData="M33,48h12v12h-12z" />
+    <path android:fillColor="#39D353" android:pathData="M48,48h12v12h-12z" />
+    <path android:fillColor="#0E4429" android:pathData="M63,48h12v12h-12z" />
+    <path android:fillColor="#26A641" android:pathData="M33,63h12v12h-12z" />
+    <path android:fillColor="#1E2621" android:pathData="M48,63h12v12h-12z" />
+    <path android:fillColor="#006D32" android:pathData="M63,63h12v12h-12z" />
+</vector>

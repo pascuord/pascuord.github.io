@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mis Commits</string>
+    <string name="widget_name">Mis Commits</string>
+    <string name="widget_desc">Tu gráfico de contribuciones de GitHub</string>
+    <string name="label_user">Usuario de GitHub</string>
+    <string name="hint_user">pascuord</string>
+    <string name="label_token">Token de GitHub (opcional)</string>
+    <string name="hint_token">ghp_…</string>
+    <string name="help_token">Con un token classic con permiso read:user se incluyen los repositorios privados y de organizaciones. Déjalo vacío para mantener el que ya tienes guardado.</string>
+    <string name="save">Guardar y actualizar</string>
+    <string name="pin">Añadir widget a la pantalla de inicio</string>
+</resources>

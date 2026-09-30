@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="@color/fg"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/widget_name"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/label_user"
+            android:textColor="@color/muted"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_user"
+            android:importantForAutofill="no"
+            android:inputType="text|textNoSuggestions"
+            android:textColor="@color/fg"
+            android:textColorHint="@color/muted" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/label_token"
+            android:textColor="@color/muted"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/token"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_token"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:textColor="@color/fg"
+            android:textColorHint="@color/muted" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/help_token"
+            android:textColor="@color/muted"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/accent"
+            android:text="@string/save"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/pin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/pin" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/muted"
+            android:textSize="13sp" />
+    </LinearLayout>
+</ScrollView>
