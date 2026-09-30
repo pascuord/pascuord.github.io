@@ -71,6 +71,11 @@ select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background
 .stat .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .msg{font-size:14px;padding:10px 12px;border-radius:10px;background:var(--l0)}
 .note{font-size:12px;color:var(--muted);text-align:center}
+summary{cursor:pointer;font-weight:600;font-size:14px}
+.help{margin:0;font-size:13px;color:var(--muted)}
+.tokrow{display:flex;gap:8px}
+.tokrow input{padding-left:12px;min-width:0}
+.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);justify-self:start;padding:8px 12px}
 @media (prefers-reduced-motion:no-preference){ .cell{transition:transform .12s} .cell:active{transform:scale(1.25)} }
 </style>
 </head>
@@ -110,7 +115,17 @@ select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background
     <div class="stat"><div class="k">Días activos</div><div class="v" id="active">–</div></div>
   </section>
 
-  <p class="note">Datos públicos de GitHub vía github-contributions-api.jogruber.de</p>
+  <details class="panel" id="settings">
+    <summary>Incluir repositorios privados y de organizaciones</summary>
+    <p class="help">Pega un token personal de GitHub (classic) con solo el permiso <b>read:user</b>. Créalo en GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic). Se guarda solo en este navegador.</p>
+    <div class="tokrow">
+      <input id="token" type="password" placeholder="ghp_…" autocomplete="off" spellcheck="false" aria-label="Token de GitHub">
+      <button id="savetok" type="button">Guardar</button>
+    </div>
+    <button id="deltok" type="button" class="ghost" hidden>Quitar token</button>
+  </details>
+
+  <p class="note" id="source">Datos públicos de GitHub vía github-contributions-api.jogruber.de</p>
 </main>
 
 <script>
@@ -199,17 +214,48 @@ function demo(){
   show(days, days.reduce((a,d)=>a+d.count,0), "(ejemplo)");
 }
 
+const LEVELS = {NONE:0,FIRST_QUARTILE:1,SECOND_QUARTILE:2,THIRD_QUARTILE:3,FOURTH_QUARTILE:4};
+
+// API oficial de GitHub (GraphQL): incluye contribuciones privadas y de organizaciones
+async function fetchOfficial(user, y, token){
+  const q = `query($login:String!,$from:DateTime,$to:DateTime){user(login:$login){contributionsCollection(from:$from,to:$to){contributionCalendar{totalContributions weeks{contributionDays{date contributionCount contributionLevel}}}}}}`;
+  const vars = {login:user};
+  if(y!=="last"){ vars.from = `${y}-01-01T00:00:00Z`; vars.to = `${y}-12-31T23:59:59Z`; }
+  const r = await fetch("https://api.github.com/graphql",{method:"POST",
+    headers:{"Authorization":"bearer "+token,"Content-Type":"application/json"},
+    body:JSON.stringify({query:q,variables:vars})});
+  if(r.status===401) throw new Error("GitHub no acepta el token. Revisa que esté bien copiado y no haya caducado.");
+  const j = await r.json().catch(()=>({}));
+  if(j.errors) throw new Error(j.errors[0].message);
+  const cal = j.data?.user?.contributionsCollection?.contributionCalendar;
+  if(!cal) throw new Error(`No se encontró el usuario «${user}».`);
+  const days = cal.weeks.flatMap(w=>w.contributionDays).map(d=>({date:d.date,count:d.contributionCount,level:LEVELS[d.contributionLevel]??0}));
+  return {days, total:cal.totalContributions};
+}
+
+async function fetchPublic(user, y){
+  const r = await fetch(API+encodeURIComponent(user)+"?y="+y);
+  const j = await r.json().catch(()=>({}));
+  if(!r.ok || !j.contributions) throw new Error(j.error || `No se encontró el usuario «${user}».`);
+  return {days:j.contributions, total:Object.values(j.total||{}).reduce((a,n)=>a+n,0)};
+}
+
+function refreshSource(){
+  const has = !!store.get("gh-token");
+  $("source").textContent = has ? "Datos de la API oficial de GitHub, con repositorios privados" : "Datos públicos de GitHub vía github-contributions-api.jogruber.de";
+  $("deltok").hidden = !has;
+  $("token").placeholder = has ? "Token guardado ••••" : "ghp_…";
+}
+
 async function load(){
   const user = $("user").value.trim().replace(/^@/,"");
   if(!user){ demo(); return; }
   const y = $("year").value;
+  const token = store.get("gh-token");
   $("go").disabled = true; $("msg").hidden = true;
   try{
-    const r = await fetch(API+encodeURIComponent(user)+"?y="+y);
-    const j = await r.json().catch(()=>({}));
-    if(!r.ok || !j.contributions) throw new Error(j.error || `No se encontró el usuario «${user}».`);
-    const total = Object.values(j.total||{}).reduce((a,n)=>a+n,0);
-    show(j.contributions, total, y==="last" ? "en el último año" : "en "+y);
+    const {days,total} = token ? await fetchOfficial(user,y,token) : await fetchPublic(user,y);
+    show(days, total, y==="last" ? "en el último año" : "en "+y);
     store.set("gh-user", user);
   }catch(e){
     $("msg").textContent = /fetch|network/i.test(e.message)
@@ -221,6 +267,15 @@ async function load(){
 
 $("f").addEventListener("submit", e=>{ e.preventDefault(); load(); });
 $("year").addEventListener("change", load);
+$("savetok").addEventListener("click", ()=>{
+  const t = $("token").value.trim(); if(!t) return;
+  store.set("gh-token", t); $("token").value = ""; refreshSource(); load();
+});
+$("deltok").addEventListener("click", ()=>{
+  try{localStorage.removeItem("gh-token")}catch(e){}
+  refreshSource(); load();
+});
+refreshSource();
 const saved = store.get("gh-user");
 if(saved){ $("user").value = saved; load(); } else demo();
 </script>
