@@ -42,3 +42,16 @@ jobs:
           name: Mis Commits widget 1.${{ github.run_number }}
           make_latest: true
           files: MisCommits.apk
+
+      # Copia el APK también en la web, para descargarlo desde pascuord.github.io
+      - name: Publicar APK en la web
+        working-directory: .
+        run: |
+          mkdir -p commits
+          cp MisCommits.apk commits/MisCommits.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add commits/MisCommits.apk
+          git commit -m "Actualiza MisCommits.apk (versión 1.${{ github.run_number }})" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
